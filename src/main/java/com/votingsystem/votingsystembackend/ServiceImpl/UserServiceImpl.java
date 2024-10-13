@@ -1,7 +1,7 @@
 package com.votingsystem.votingsystembackend.ServiceImpl;
 
-import com.votingsystem.votingsystembackend.DTO.UserDTO;
-import com.votingsystem.votingsystembackend.Entity.User;
+import com.votingsystem.votingsystembackend.DTO.RegisterReq;
+import com.votingsystem.votingsystembackend.Entity.UserEntity;
 import com.votingsystem.votingsystembackend.Repository.UserRepository;
 import com.votingsystem.votingsystembackend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +15,25 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public void addUser(UserDTO userDto){
+    public void addUser(RegisterReq registerReq){
 
         // check if a user with the same email already exists
-        if (userRepository.findByEmail(userDto.getEmail()) != null) {
-            throw new RuntimeException("User with email " + userDto.getEmail() + " already exists.");
+        if (userRepository.findByEmail(registerReq.getEmail()) != null) {
+            throw new RuntimeException("User with email " + registerReq.getEmail() + " already exists.");
         }
 
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 
 
-        User user = new User();
+        UserEntity user = new UserEntity();
 
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
+        user.setFirstName(registerReq.getFirstName());
+        user.setLastName(registerReq.getLastName());
+        user.setEmail(registerReq.getEmail());
+        user.setRoleId(registerReq.getRoleId());
 
         // implementing the bcrypt for passwords
-        String encryptedPass = bcrypt.encode(userDto.getPassword());
+        String encryptedPass = bcrypt.encode(registerReq.getPassword());
         user.setPassword(encryptedPass);
 
 
@@ -40,8 +41,21 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public String login(RegisterReq registerReq) {
+        // Autowire the BCryptPasswordEncoder
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+        // Find the user by email
+        UserEntity user = userRepository.findByEmail(registerReq.getEmail());
 
+        // Check if user exists and if the password matches
+        if (user != null && passwordEncoder.matches(registerReq.getPassword(), user.getPassword())) {
+            return "Login Successful!";
+        } else {
+            return "Wrong Email or Password";
+        }
+    }
 
 
 
