@@ -1,6 +1,7 @@
 package com.votingsystem.votingsystembackend.ServiceImpl;
 
 import com.votingsystem.votingsystembackend.DTO.RegisterReq;
+import com.votingsystem.votingsystembackend.Entity.RoleEntity;
 import com.votingsystem.votingsystembackend.Entity.UserEntity;
 import com.votingsystem.votingsystembackend.Repository.UserRepository;
 import com.votingsystem.votingsystembackend.Service.UserService;
@@ -25,19 +26,21 @@ public class UserServiceImpl implements UserService {
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 
 
-        UserEntity user = new UserEntity();
+        UserEntity userEntity = new UserEntity();
+        RoleEntity roleEntity = new RoleEntity();
 
-        user.setFirstName(registerReq.getFirstName());
-        user.setLastName(registerReq.getLastName());
-        user.setEmail(registerReq.getEmail());
-        user.setRoleId(registerReq.getRoleId());
+        userEntity.setFirstName(registerReq.getFirstName());
+        userEntity.setLastName(registerReq.getLastName());
+        userEntity.setEmail(registerReq.getEmail());
+        userEntity.setRole(roleEntity);
+
 
         // implementing the bcrypt for passwords
         String encryptedPass = bcrypt.encode(registerReq.getPassword());
-        user.setPassword(encryptedPass);
+        userEntity.setPassword(encryptedPass);
 
 
-        userRepository.save(user);
+        userRepository.save(userEntity);
 
     }
 

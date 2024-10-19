@@ -11,7 +11,8 @@ import lombok.Setter;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Use IDENTITY for auto-increment
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -26,5 +27,7 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    private int roleId;
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id", nullable = false)
+    private RoleEntity role;
 }
