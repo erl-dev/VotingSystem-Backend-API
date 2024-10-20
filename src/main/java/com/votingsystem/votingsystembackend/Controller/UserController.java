@@ -27,8 +27,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody RegisterReq registerReq) {
-        return userService.login(registerReq);
+    public ResponseEntity<String> login(@RequestBody RegisterReq registerReq) {
+        try {
+            // If login is successful, return the token
+            String token = userService.login(registerReq);
+            return ResponseEntity.ok("Login successful. Token:" + token);
+        } catch (RuntimeException e) {
+            // Catch the exception and return an appropriate error message
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
 
 }
