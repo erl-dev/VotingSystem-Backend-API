@@ -46,7 +46,7 @@ public class ElectionController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
-    @PreAuthorize("hasRole('1')") // Only admins can delete elections
+    @PreAuthorize("hasRole('1')")
     @DeleteMapping("/delete/{electionId}")
     public ResponseEntity<String> deleteElection(@PathVariable int electionId) {
         try {
@@ -55,5 +55,14 @@ public class ElectionController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @PreAuthorize("hasRole('1')")
+    @GetMapping("/getElectionByName/{electionName}")
+    public ResponseEntity<ElectionEntity> getElectionByName(@PathVariable String electionName) {
+        Optional<ElectionEntity> electionEntity = electionService.findByElectionName(electionName);
+        return electionEntity.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(null));
     }
 }

@@ -1,6 +1,7 @@
 package com.votingsystem.votingsystembackend.Controller;
 
 import com.votingsystem.votingsystembackend.DTO.RegisterReq;
+import com.votingsystem.votingsystembackend.DTO.RegisterRes;
 import com.votingsystem.votingsystembackend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,16 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> saveUser(@RequestBody RegisterReq registerReq) {
-
+    public ResponseEntity<RegisterRes> saveUser(@RequestBody RegisterReq registerReq) {
+        RegisterRes response = new RegisterRes();
         try {
             userService.addUser(registerReq);
-            return ResponseEntity.ok("User registered successfully.");
+
+            response.setMessage("User registered successfully.");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -37,6 +41,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
-
 }

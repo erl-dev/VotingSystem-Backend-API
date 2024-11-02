@@ -24,6 +24,10 @@ public class ElectionServiceImpl {
         electionRepository.save(electionEntity);
     }
 
+    public Optional<ElectionEntity> findByElectionName(String electionName) {
+        return electionRepository.findByElectionName(electionName);
+    }
+
     public List<ElectionEntity> getAllElections() {
         return electionRepository.findAll();
     }
