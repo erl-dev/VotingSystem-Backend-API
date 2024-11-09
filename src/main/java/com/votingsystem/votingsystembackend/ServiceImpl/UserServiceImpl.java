@@ -1,5 +1,7 @@
 package com.votingsystem.votingsystembackend.ServiceImpl;
 
+import com.votingsystem.votingsystembackend.DTO.LoginReq;
+import com.votingsystem.votingsystembackend.DTO.LoginResponse;
 import com.votingsystem.votingsystembackend.DTO.RegisterReq;
 import com.votingsystem.votingsystembackend.Entity.RoleEntity;
 import com.votingsystem.votingsystembackend.Entity.UserEntity;
@@ -59,18 +61,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public String login(RegisterReq registerReq) {
+    public LoginResponse login(LoginReq loginReq) {
         // Autowire the BCryptPasswordEncoder
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         // Find the user by email
-        UserEntity user = userRepository.findByEmail(registerReq.getEmail());
+        UserEntity user = userRepository.findByEmail(loginReq.getEmail());
+        LoginResponse loginResponse = new LoginResponse();
 
         // Check if user exists and if the password matches
-        if (user != null && passwordEncoder.matches(registerReq.getPassword(), user.getPassword())) {
-            return jwtUtil.generateToken(user.getEmail(),user.getRole().getRoleName());
+        if (user != null && passwordEncoder.matches(loginReq.getPassword(), user.getPassword())) {
+            loginResponse.setMessage("Login Successful!");
+            loginResponse.setEmail(user.getEmail());
+            loginResponse.setToken(jwtUtil.generateToken(user.getEmail(),user.getRole().getRoleName()));
+            loginResponse.setRoleId(user.getRole().getRoleId());
+            return loginResponse;
         } else {
-            throw new RuntimeException("Invalid credentials");
+            loginResponse.setMessage("Invalid Credentials");
+            return loginResponse;
         }
     }
 

@@ -1,5 +1,7 @@
 package com.votingsystem.votingsystembackend.Controller;
 
+import com.votingsystem.votingsystembackend.DTO.LoginReq;
+import com.votingsystem.votingsystembackend.DTO.LoginResponse;
 import com.votingsystem.votingsystembackend.DTO.RegisterReq;
 import com.votingsystem.votingsystembackend.DTO.RegisterRes;
 import com.votingsystem.votingsystembackend.Service.UserService;
@@ -31,14 +33,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody RegisterReq registerReq) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginReq loginReq) {
+        LoginResponse response = userService.login(loginReq);
         try {
             // If login is successful, return the token
-            String token = userService.login(registerReq);
-            return ResponseEntity.ok("Login successful. Token:" + token);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             // Catch the exception and return an appropriate error message
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 }
